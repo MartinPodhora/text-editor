@@ -10,3 +10,45 @@
   height: calc(66vh + 120px);
   padding-top: calc(34vh - 120px);
 }
+
+.title {
+  color: #ffffff;
+  font-family: "Helvetica Neue", sans-serif;
+  font-size: 24px;
+  font-weight: 200;
+  letter-spacing: 1px;
+  line-height: 1;
+  text-align: center;
+}
+
+.sideDrawer {
+  width: 250px;
+}
+
+.tabs {
+  padding: 0px 0px 0px 40px;
+  flex-grow: 1;
+}
+
+.appBar {
+  margin-bottom: 40px;
+}
+
+.profilePaper {
+  padding: 20px;
+  margin: 10px;
+}
+
+.profileAvatar {
+  margin: auto;
+  margin-top: 90px;
+}
+
+.profileCard {
+  height: 430px;
+}
+
+.ck-editor__editable {
+  min-height: 700px;
+  border: 5px solid #000000;
+}
