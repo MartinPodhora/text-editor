@@ -21,7 +21,8 @@ import CloseIcon from "@material-ui/icons/Close";
 import { HandleError as handleError } from "./ErrorAlert";
 
 function Editor({ data }) {
-  const [text, setText] = useState(_.isEmpty(data?.text) ? "" : data.text);
+  const edit = !_.isEmpty(data?.text);
+  const [text, setText] = useState(edit ? data.text : "");
   const { docs, setDocs } = useContext(AppCtx);
   const [nameDialog, setNameDialog] = useState(false);
   const [docName, setDocName] = useState("");
@@ -37,21 +38,32 @@ function Editor({ data }) {
   };
 
   const handleSave = () => {
-    if (_.isEmpty(docName)) {
-      return handleError("Document name canot be empty", "Editor");
-    } else if (!_.isEmpty(docs.find((doc) => doc.name === docName))) {
-      return handleError("Document already exists", "Editor");
-    } else if (_.isEmpty(text)) {
-      return handleError("You didnt put any text into document", "Editor");
+    if (!edit) {
+      if (_.isEmpty(docName)) {
+        return handleError("Document name canot be empty", "Editor");
+      } else if (!_.isEmpty(docs.find((doc) => doc.name === docName))) {
+        return handleError("Document already exists", "Editor");
+      } else if (_.isEmpty(text)) {
+        return handleError("You didnt put any text into document", "Editor");
+      }
+    } else {
+      if (_.isEmpty(text)) {
+        return handleError("You didnt put any text into document", "Editor");
+      }
     }
 
     handleCloseNameDialog();
     const newDoc = {
-      name: docName,
+      name: edit ? data.name : docName,
       created: moment().toISOString(),
       type: "text",
       text: text,
     };
+
+    if (edit) {
+      const newDocs = _.difference(docs, [data]);
+      return setDocs([...newDocs, newDoc]);
+    }
     setDocs([...docs, newDoc]);
     setDocName("");
     setText("");
@@ -99,7 +111,7 @@ function Editor({ data }) {
             color="primary"
             component="span"
             variant="extended"
-            onClick={() => setNameDialog(true)}
+            onClick={() => (edit ? handleSave() : setNameDialog(true))}
           >
             <SaveIcon style={{ marginRight: "20px" }} /> Save
           </Fab>
