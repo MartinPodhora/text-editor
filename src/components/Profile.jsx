@@ -49,6 +49,11 @@ function Profile() {
     setOpenPswEdit(false);
   };
 
+  const handleNewPhoto = (event) => {
+    //var file = event.target.files[0];
+    console.log("changing photo");
+  };
+
   return (
     <Fragment>
       <Grid container justify="center">
@@ -109,11 +114,19 @@ function Profile() {
                 <Card className="profileCard">
                   <CardContent>
                     <Typography variant="h6">Photo</Typography>
-                    <Avatar
-                      src={"data:image/*;base64," + loggedUser.photo}
-                      className="profileAvatar"
-                      style={{ height: "150px", width: "150px" }}
-                    />
+                    <label htmlFor="upload-photo">
+                      <input
+                        style={{ display: "none" }}
+                        id="upload-photo"
+                        type="file"
+                        onChange={handleNewPhoto}
+                      />
+                      <Avatar
+                        src={"data:image/*;base64," + loggedUser.photo}
+                        className="profileAvatar"
+                        style={{ height: "150px", width: "150px" }}
+                      />
+                    </label>
                   </CardContent>
                 </Card>
               </Grid>

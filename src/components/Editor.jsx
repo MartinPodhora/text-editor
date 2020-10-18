@@ -53,6 +53,8 @@ function Editor({ data }) {
       text: text,
     };
     setDocs([...docs, newDoc]);
+    setDocName("");
+    setText("");
   };
 
   const handleCloseNameDialog = () => {

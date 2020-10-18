@@ -27,7 +27,7 @@ export const DOCUMENTS = [
   },
   {
     name: "another document",
-    created: "2020-9-12T09:58",
+    created: "2020-09-12T09:58",
     type: "text",
     text:
       "Quisque arcu lectus, laoreet in quam et, condimentum hendrerit est. Sed leo mi, tempus quis vestibulum et, cursus et turpis. Vivamus purus elit, semper interdum nulla at, scelerisque aliquet velit. Fusce pretium pulvinar faucibus. Suspendisse vel nisl sapien. Praesent blandit sagittis cursus. Donec eget aliquam nulla, ut interdum nunc. Quisque fermentum odio libero, non eleifend lacus consectetur vitae. Praesent non neque sed augue feugiat consectetur. Nunc pulvinar eleifend hendrerit. Fusce sit amet dapibus turpis. Quisque viverra magna ac placerat congue. In accumsan nulla nec pellentesque facilisis. Ut sit amet sem eget odio pellentesque euismod.",
