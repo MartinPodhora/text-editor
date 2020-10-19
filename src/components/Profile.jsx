@@ -50,9 +50,21 @@ function Profile() {
   };
 
   const handleNewPhoto = (event) => {
-    //var file = event.target.files[0];
-    console.log("changing photo");
+    const file = event.target.files;
+
+        if (file.length > 0 && ((file![0].size / 1024) / 1024) > 1) {
+            return handleError!("1 MB max file size. Select a new file and try again.", "Profile");
+        }
+
+        if (file.length > 0) {
+          const newPhoto = toBase64(file)   
+          setLoggedUser({...loggedUser, photo: newPhoto})
+        }
   };
+  
+  const toBase64 = (file) => {
+    return ""
+  }
 
   return (
     <Fragment>
