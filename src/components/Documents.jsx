@@ -80,29 +80,29 @@ function Documents() {
   };
 
   const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelecteds = docs.map((doc) => doc.name);
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
+    setSelected(event.target.checked ? docs.map((doc) => doc.name) : []);
   };
 
   const handleClick = (event, name) => {
     const selectedIndex = selected.indexOf(name);
     let newSelected = [];
 
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
+    switch (selectedIndex) {
+      case -1:
+        newSelected = newSelected.concat(selected, name);
+        break;
+      case 0:
+        newSelected = newSelected.concat(selected.slice(1));
+        break;
+      case selected.length - 1:
+        newSelected = newSelected.concat(selected.slice(0, -1));
+        break;
+      default:
+        newSelected = newSelected.concat(
+          selected.slice(0, selectedIndex),
+          selected.slice(selectedIndex + 1)
+        );
+        break;
     }
 
     setSelected(newSelected);
@@ -141,14 +141,14 @@ function Documents() {
     <Grid container justify="center">
       <Grid item xs={11} sm={10} md={9}>
         <Paper className={classes.paper}>
-          <EnhancedTableToolbar
+          <CustomTableToolbar
             numSelected={selected.length}
             handleDelete={handleDelete}
             handleOpen={handleOpen}
           />
           <TableContainer>
             <Table>
-              <EnhancedTableHead
+              <CustomTableHead
                 classes={classes}
                 numSelected={selected.length}
                 order={order}
@@ -179,10 +179,10 @@ function Documents() {
                         <TableCell component="th" scope="row" padding="none">
                           {row.name}
                         </TableCell>
-                        <TableCell align="right">
+                        <TableCell align="left">
                           {moment(row.created).format("DD.MM.YYYY")}
                         </TableCell>
-                        <TableCell align="right">{row.type}</TableCell>
+                        <TableCell align="left">{row.type}</TableCell>
                       </TableRow>
                     );
                   })}
@@ -229,7 +229,7 @@ const useToolbarStyles = makeStyles((theme) => ({
   },
 }));
 
-const EnhancedTableToolbar = (props) => {
+const CustomTableToolbar = (props) => {
   const classes = useToolbarStyles();
   const { numSelected, handleDelete, handleOpen } = props;
 
@@ -266,24 +266,25 @@ const EnhancedTableToolbar = (props) => {
         </Tooltip>
       )}
 
-      {numSelected > 0 ? (
+      {numSelected > 0 && (
         <Tooltip title="Delete">
           <IconButton aria-label="delete" onClick={handleDelete}>
             <DeleteIcon />
           </IconButton>
         </Tooltip>
-      ) : (
+      )}
+      {/* ) : (
         <Tooltip title="Filter list">
           <IconButton aria-label="filter list">
             <FilterListIcon />
           </IconButton>
         </Tooltip>
-      )}
+      )} */}
     </Toolbar>
   );
 };
 
-function EnhancedTableHead(props) {
+function CustomTableHead(props) {
   const {
     classes,
     onSelectAllClick,
@@ -305,14 +306,11 @@ function EnhancedTableHead(props) {
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
-            inputProps={{ "aria-label": "select all desserts" }}
           />
         </TableCell>
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.numeric ? "right" : "left"}
-            padding={headCell.disablePadding ? "none" : "default"}
             sortDirection={orderBy === headCell.id ? order : false}
           >
             <TableSortLabel
@@ -361,9 +359,9 @@ function stableSort(array, comparator) {
 }
 
 const headCells = [
-  { id: "name", numeric: false, disablePadding: true, label: "Document name" },
-  { id: "created", numeric: false, disablePadding: false, label: "Created" },
-  { id: "type", numeric: false, disablePadding: false, label: "Type" },
+  { id: "name", label: "Document name" },
+  { id: "created", label: "Created" },
+  { id: "type", label: "Type" },
 ];
 
 export default Documents;

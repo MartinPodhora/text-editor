@@ -50,23 +50,21 @@ function Profile() {
   };
 
   const handleNewPhoto = (event) => {
-    const file = event.target.files;
+    var file = event.target.files[0];
 
-    if (file.length > 0 && file[0].size / 1024 / 1024 > 1) {
+    if (file.size / 1024 / 1024 > 1) {
       return handleError(
         "1 MB max file size. Select a new file and try again.",
         "Profile"
       );
     }
 
-    if (file.length > 0) {
-      const newPhoto = toBase64(file);
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      var newPhoto = reader.result;
       setLoggedUser({ ...loggedUser, photo: newPhoto });
-    }
-  };
-
-  const toBase64 = (file) => {
-    return "";
+    };
+    reader.readAsDataURL(file);
   };
 
   return (
@@ -137,7 +135,7 @@ function Profile() {
                         onChange={handleNewPhoto}
                       />
                       <Avatar
-                        src={"data:image/*;base64," + loggedUser.photo}
+                        src={loggedUser.photo}
                         className="profileAvatar"
                         style={{ height: "150px", width: "150px" }}
                       />

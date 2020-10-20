@@ -30,8 +30,7 @@ function AppMenu() {
 
   useEffect(() => {
     const userAvatar = () => {
-      loggedUser.hasOwnProperty("photo") &&
-        setUserAvatar("data:image/*;base64," + loggedUser.photo);
+      loggedUser.hasOwnProperty("photo") && setUserAvatar(loggedUser.photo);
     };
     userAvatar();
   }, [loggedUser]);
