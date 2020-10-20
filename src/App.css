@@ -48,7 +48,7 @@
   height: 430px;
 }
 
-.ck-editor__editable {
+.ck.ck-editor__editable_inline {
   min-height: 700px;
-  border: 5px solid #000000;
+  border: 1px solid black !important;
 }
