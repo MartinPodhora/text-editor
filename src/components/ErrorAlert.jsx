@@ -24,7 +24,9 @@ export function HandleError(err, comp) {
         context.setErrors([
           ...context.errors,
           "500 Internal Server Error \n" +
-            err.response.headers.reason +
+            err.response.headers[
+              "com.ibm.ws.opentracing.opentracingjaxrsemcallbackimpl.exception"
+            ] +
             " " +
             comp +
             " " +

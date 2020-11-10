@@ -14,26 +14,18 @@ import {
   Avatar,
   Tooltip,
 } from "@material-ui/core";
-import React, { useState, Fragment, useContext, useEffect } from "react";
+import React, { useState, Fragment, useContext } from "react";
 import MenuIcon from "@material-ui/icons/Menu";
 import { useNavigate } from "react-router-dom";
 import { AppCtx } from "../App";
 
 function AppMenu() {
-  const { loggedUser, setLoggedUser } = useContext(AppCtx);
+  const { setLoggedUser, photo } = useContext(AppCtx);
   const [anchorProfileMenu, setAnchorProfileMenu] = useState(null);
   const [expandLeftPanel, setExpandLeftPanel] = useState(false);
-  const [userAvatar, setUserAvatar] = useState("");
   const [tabValue, setTabValue] = useState(0);
   const navigate = useNavigate();
   const openProfile = Boolean(anchorProfileMenu);
-
-  useEffect(() => {
-    const userAvatar = () => {
-      loggedUser.hasOwnProperty("photo") && setUserAvatar(loggedUser.photo);
-    };
-    userAvatar();
-  }, [loggedUser]);
 
   return (
     <Fragment>
@@ -71,7 +63,7 @@ function AppMenu() {
               color="inherit"
             >
               <Tooltip title="Profile">
-                <Avatar src={userAvatar} />
+                <Avatar src={photo} />
               </Tooltip>
             </IconButton>
             <Menu

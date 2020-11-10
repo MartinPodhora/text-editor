@@ -14,31 +14,37 @@ import {
 import CloseIcon from "@material-ui/icons/Close";
 import React, { useContext, useState, Fragment } from "react";
 import { Paper } from "@material-ui/core";
-import { AppCtx } from "../App";
+import { AppCtx, BaseUrl } from "../App";
 import { useForm } from "react-hook-form";
 import { HandleError as handleError } from "./ErrorAlert";
 import _ from "lodash";
+import axios from "axios";
 
 function Profile() {
-  const { loggedUser, setLoggedUser } = useContext(AppCtx);
+  const { loggedUser, setLoggedUser, photo, setPhoto } = useContext(AppCtx);
   const [openProfileEdit, setOpenProfileEdit] = useState(false);
   const [openPswEdit, setOpenPswEdit] = useState(false);
   const { handleSubmit, register, errors } = useForm();
 
   const onSubmit = (data) => {
     if (!_.isEmpty(data.oldPassword)) {
-      if (data.oldPassword !== loggedUser.password) {
-        return handleError("Wrong password", "ProfilePswChange");
-      } else if (data.password !== data.newPassword) {
+      if (data.password !== data.newPassword) {
         return handleError("Wrong confirm password", "ProfilePswChange");
-      } else if (data.password === loggedUser.password) {
-        return handleError("Password is same as old", "ProfilePswChange");
+      } else {
+        return handleNewPassword(data.oldPassword, data.newPassword);
       }
     }
 
-    setLoggedUser({ ...loggedUser, ...data });
-    handleCloseEdit();
-    handleClosePsw();
+    let updatedUser = { ...loggedUser, ...data };
+    axios
+      .put(BaseUrl + "/TeUser/update", updatedUser)
+      .then((res) => {
+        setLoggedUser(res.data);
+        handleCloseEdit();
+      })
+      .catch((error) => {
+        handleError(error, "Profile page");
+      });
   };
 
   const handleCloseEdit = () => {
@@ -47,6 +53,25 @@ function Profile() {
 
   const handleClosePsw = () => {
     setOpenPswEdit(false);
+  };
+
+  const handleNewPassword = (oldPass, newPass) => {
+    axios
+      .put(
+        BaseUrl + `/TeUser/changePassword/${loggedUser.username}`,
+        oldPass + "," + newPass,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
+      .then((res) => {
+        handleClosePsw();
+      })
+      .catch((error) => {
+        handleError(error, "ProfilePswChange");
+      });
   };
 
   const handleNewPhoto = (event) => {
@@ -62,7 +87,18 @@ function Profile() {
     var reader = new FileReader();
     reader.onload = function (e) {
       var newPhoto = reader.result;
-      setLoggedUser({ ...loggedUser, photo: newPhoto });
+      axios
+        .put(BaseUrl + `/TeUser/updatePhoto/${loggedUser.username}`, newPhoto, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+        .then((res) => {
+          setPhoto(newPhoto);
+        })
+        .catch((error) => {
+          handleError(error, "Profile page");
+        });
     };
     reader.readAsDataURL(file);
   };
@@ -135,7 +171,7 @@ function Profile() {
                         onChange={handleNewPhoto}
                       />
                       <Avatar
-                        src={loggedUser.photo}
+                        src={photo}
                         className="profileAvatar"
                         style={{ height: "150px", width: "150px" }}
                       />
@@ -195,12 +231,8 @@ function Profile() {
               label="Username"
               name="username"
               margin="normal"
-              error={errors.hasOwnProperty("username")}
-              helperText={errors.username?.message}
+              disabled
               defaultValue={loggedUser.username}
-              inputRef={register({
-                required: "this field need to be filled",
-              })}
             />
             <TextField
               variant="outlined"

@@ -18,7 +18,7 @@ import {
 } from "@material-ui/core";
 import { lighten, makeStyles } from "@material-ui/core/styles";
 import React, { useContext, useState, Fragment } from "react";
-import { AppCtx } from "../App";
+import { AppCtx, BaseUrl } from "../App";
 import moment from "moment";
 import DeleteIcon from "@material-ui/icons/Delete";
 //import FilterListIcon from "@material-ui/icons/FilterList";
@@ -26,6 +26,8 @@ import clsx from "clsx";
 import _ from "lodash";
 import Editor from "./Editor";
 import OpenInNewIcon from "@material-ui/icons/OpenInNew";
+import axios from "axios";
+import { HandleError as handleError } from "./ErrorAlert";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -65,6 +67,18 @@ function Documents() {
     const deleted = selected.map((item) =>
       docs.find((doc) => doc.name === item)
     );
+
+    deleted.forEach((doc) => {
+      axios
+        .delete(BaseUrl + `/TeDocument/delete/${doc.id}`)
+        .then((res) => {
+          setPage(0);
+        })
+        .catch((error) => {
+          return handleError(error, "Deleting documents");
+        });
+    });
+
     setDocs(_.difference(docs, deleted));
     setSelected([]);
   };
@@ -170,7 +184,7 @@ function Documents() {
                         role="checkbox"
                         aria-checked={isItemSelected}
                         tabIndex={-1}
-                        key={row.name}
+                        key={row.id}
                         selected={isItemSelected}
                       >
                         <TableCell padding="checkbox">
@@ -180,9 +194,11 @@ function Documents() {
                           {row.name}
                         </TableCell>
                         <TableCell align="left">
-                          {moment(row.created).format("DD.MM.YYYY")}
+                          {moment(row.dateCreated.substring(0, 20)).format(
+                            "DD.MM.YYYY"
+                          )}
                         </TableCell>
-                        <TableCell align="left">{row.type}</TableCell>
+                        {/* <TableCell align="left">{row.type}</TableCell> */}
                       </TableRow>
                     );
                   })}
@@ -361,7 +377,12 @@ function stableSort(array, comparator) {
 const headCells = [
   { id: "name", label: "Document name" },
   { id: "created", label: "Created" },
-  { id: "type", label: "Type" },
 ];
+
+// const headCells = [
+//   { id: "name", label: "Document name" },
+//   { id: "created", label: "Created" },
+//   { id: "type", label: "Type" },
+// ];
 
 export default Documents;

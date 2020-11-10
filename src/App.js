@@ -13,22 +13,43 @@ import AppMenu from "./components/AppMenu";
 import Documents from "./components/Documents";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import _ from "lodash";
-import { USERS, DOCUMENTS } from "./components/testData";
-import ErrorAlert from "./components/ErrorAlert";
+import ErrorAlert, {
+  HandleError as handleError,
+} from "./components/ErrorAlert";
+import axios from "axios";
 
 export const AppCtx = createContext();
+export const BaseUrl = "http://127.0.0.1:9080/texteditor";
 
 function App() {
   const [loggedUser, setLoggedUser] = useState({});
+  const [photo, setPhoto] = useState("");
   const [errors, setErrors] = useState([]);
   const [open, setOpen] = useState(false);
-  const [docs, setDocs] = useState(DOCUMENTS);
+  const [docs, setDocs] = useState([]);
   const navigate = useNavigate();
-  const users = USERS;
 
   useEffect(() => {
     if (_.isEmpty(loggedUser)) {
       navigate("/login");
+    } else {
+      axios
+        .get(BaseUrl + `/TeUser/photo/${loggedUser.username}`)
+        .then((res) => {
+          setPhoto(res.data);
+        })
+        .catch((error) => {
+          handleError(error, "Application");
+        });
+
+      axios
+        .get(BaseUrl + `/TeDocument/all/${loggedUser.username}`)
+        .then((res) => {
+          setDocs(res.data);
+        })
+        .catch((error) => {
+          handleError(error, "Application");
+        });
     }
   }, [loggedUser, navigate]);
 
@@ -37,13 +58,14 @@ function App() {
       value={{
         loggedUser,
         setLoggedUser,
-        users,
         errors,
         setErrors,
         open,
         setOpen,
         docs,
         setDocs,
+        photo,
+        setPhoto,
       }}
     >
       <Routes>

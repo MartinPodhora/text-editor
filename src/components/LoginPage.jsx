@@ -14,25 +14,30 @@ import {
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
-import { AppCtx } from "../App";
+import { AppCtx, BaseUrl } from "../App";
 import { HandleError as handleError } from "./ErrorAlert";
-import _ from "lodash";
+import axios from "axios";
 
 function LoginPage() {
   const { handleSubmit, register, errors } = useForm();
-  const { users, setLoggedUser } = useContext(AppCtx);
+  const { setLoggedUser } = useContext(AppCtx);
   const [showPsw, setShowPsw] = useState(false);
   const navigate = useNavigate();
 
   const onSubmit = async (data) => {
-    let user = users.find((item) => item.username === data.username);
-    if (_.isEmpty(user)) {
-      return handleError("User not found", "LoginPage");
-    } else if (user.password !== data.password) {
-      return handleError("Wrong Password", "LoginPage");
-    }
-    setLoggedUser(user);
-    navigate("/editor");
+    await axios
+      .post(BaseUrl + `/TeUser/login/${data.username}`, data.password, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((res) => {
+        setLoggedUser(res.data);
+        navigate("/editor");
+      })
+      .catch((error) => {
+        handleError(error, "login page");
+      });
   };
 
   return (
@@ -50,7 +55,6 @@ function LoginPage() {
                 error={errors.hasOwnProperty("username")}
                 helperText={errors.username?.message}
                 inputRef={register({ required: "fill username field" })}
-                defaultValue="martinP"
               />
             </Grid>
             <Grid item xs={12}>
@@ -63,7 +67,6 @@ function LoginPage() {
                   type={showPsw ? "text" : "password"}
                   error={errors.hasOwnProperty("password")}
                   inputRef={register({ required: true })}
-                  defaultValue="martin"
                   endAdornment={
                     <InputAdornment position="end">
                       <IconButton

@@ -15,15 +15,16 @@ import CKEditor from "@ckeditor/ckeditor5-react";
 import _ from "lodash";
 import AddIcon from "@material-ui/icons/Add";
 import SaveIcon from "@material-ui/icons/Save";
-import { AppCtx } from "../App";
+import { AppCtx, BaseUrl } from "../App";
 import moment from "moment";
 import CloseIcon from "@material-ui/icons/Close";
 import { HandleError as handleError } from "./ErrorAlert";
+import axios from "axios";
 
 function Editor({ data }) {
-  const edit = !_.isEmpty(data?.text);
-  const [text, setText] = useState(edit ? data.text : "");
-  const { docs, setDocs } = useContext(AppCtx);
+  const edit = !_.isEmpty(data?.content);
+  const [text, setText] = useState(edit ? data.content : "");
+  const { docs, setDocs, loggedUser } = useContext(AppCtx);
   const [nameDialog, setNameDialog] = useState(false);
   const [docName, setDocName] = useState("");
 
@@ -41,32 +42,52 @@ function Editor({ data }) {
     if (!edit) {
       if (_.isEmpty(docName)) {
         return handleError("Document name canot be empty", "Editor");
-      } else if (!_.isEmpty(docs.find((doc) => doc.name === docName))) {
-        return handleError("Document already exists", "Editor");
       } else if (_.isEmpty(text)) {
         return handleError("You didnt put any text into document", "Editor");
       }
+
+      const newDoc = {
+        name: docName,
+        dateCreated: moment().toISOString(),
+        id: 0,
+        content: text,
+        user: loggedUser,
+      };
+
+      axios
+        .post(BaseUrl + "/TeDocument/create", newDoc)
+        .then((res) => {
+          setDocs([...docs, newDoc]);
+          setDocName("");
+          setText("");
+          handleCloseNameDialog();
+        })
+        .catch((error) => {
+          handleError(error, "Editor");
+        });
     } else {
       if (_.isEmpty(text)) {
         return handleError("You didnt put any text into document", "Editor");
       }
-    }
 
-    handleCloseNameDialog();
-    const newDoc = {
-      name: edit ? data.name : docName,
-      created: moment().toISOString(),
-      type: "text",
-      text: text,
-    };
+      const editedDoc = {
+        name: data.name,
+        dateCreated: moment().toISOString(),
+        id: data.id,
+        content: text,
+        user: data.user,
+      };
 
-    if (edit) {
-      const newDocs = _.difference(docs, [data]);
-      return setDocs([...newDocs, newDoc]);
+      axios
+        .put(BaseUrl + "/TeDocument/update", editedDoc)
+        .then((res) => {
+          const newDocs = _.difference(docs, [data]);
+          setDocs([...newDocs, editedDoc]);
+        })
+        .catch((error) => {
+          handleError(error, "Editor");
+        });
     }
-    setDocs([...docs, newDoc]);
-    setDocName("");
-    setText("");
   };
 
   const handleCloseNameDialog = () => {
