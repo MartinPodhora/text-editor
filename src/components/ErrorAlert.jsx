@@ -23,14 +23,7 @@ export function HandleError(err, comp) {
       } else if (err.response.status === 500) {
         context.setErrors([
           ...context.errors,
-          "500 Internal Server Error \n" +
-            err.response.headers[
-              "com.ibm.ws.opentracing.opentracingjaxrsemcallbackimpl.exception"
-            ] +
-            " " +
-            comp +
-            " " +
-            Date(Date.now()).toString(),
+          err.response.headers.message + " " + comp,
         ]);
       } else {
         context.setErrors([
