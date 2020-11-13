@@ -266,6 +266,7 @@ function Profile() {
               label="Email"
               name="email"
               margin="normal"
+              type="email"
               defaultValue={loggedUser.email}
               error={errors.hasOwnProperty("email")}
               helperText={errors.email?.message}
