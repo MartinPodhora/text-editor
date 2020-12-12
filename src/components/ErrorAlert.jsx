@@ -47,11 +47,7 @@ export function HandleError(err, comp) {
       ]);
     }
   } else {
-    context.setErrors([
-      ...context.errors,
-      err,
-      //err + " " + Date(Date.now()).toString(),
-    ]);
+    context.setErrors([...context.errors, err]);
   }
   context.setOpen(true);
 }

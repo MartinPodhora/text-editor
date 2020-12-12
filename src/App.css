@@ -7,7 +7,7 @@
 .loginBackground {
   background-image: url("./bluebg.jpg");
   background-size: cover;
-  height: calc(66vh + 120px);
+  height: 1400px;
   padding-top: calc(34vh - 120px);
 }
 
@@ -51,4 +51,5 @@
 .ck.ck-editor__editable_inline {
   min-height: 700px;
   border: 1px solid black !important;
+  background-color: #fafafa;
 }

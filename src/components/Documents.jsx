@@ -21,7 +21,6 @@ import React, { useContext, useState, Fragment } from "react";
 import { AppCtx, BaseUrl } from "../App";
 import moment from "moment";
 import DeleteIcon from "@material-ui/icons/Delete";
-//import FilterListIcon from "@material-ui/icons/FilterList";
 import clsx from "clsx";
 import _ from "lodash";
 import Editor from "./Editor";
@@ -198,7 +197,6 @@ function Documents() {
                             "DD.MM.YYYY"
                           )}
                         </TableCell>
-                        {/* <TableCell align="left">{row.type}</TableCell> */}
                       </TableRow>
                     );
                   })}
@@ -289,13 +287,6 @@ const CustomTableToolbar = (props) => {
           </IconButton>
         </Tooltip>
       )}
-      {/* ) : (
-        <Tooltip title="Filter list">
-          <IconButton aria-label="filter list">
-            <FilterListIcon />
-          </IconButton>
-        </Tooltip>
-      )} */}
     </Toolbar>
   );
 };
@@ -378,11 +369,5 @@ const headCells = [
   { id: "name", label: "Document name" },
   { id: "created", label: "Created" },
 ];
-
-// const headCells = [
-//   { id: "name", label: "Document name" },
-//   { id: "created", label: "Created" },
-//   { id: "type", label: "Type" },
-// ];
 
 export default Documents;

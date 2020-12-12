@@ -19,11 +19,23 @@ import { useForm } from "react-hook-form";
 import { HandleError as handleError } from "./ErrorAlert";
 import _ from "lodash";
 import axios from "axios";
+import { Autocomplete } from "@material-ui/lab";
 
 function Profile() {
-  const { loggedUser, setLoggedUser, photo, setPhoto } = useContext(AppCtx);
+  const {
+    loggedUser,
+    setLoggedUser,
+    photo,
+    setPhoto,
+    style,
+    allStyles,
+  } = useContext(AppCtx);
   const [openProfileEdit, setOpenProfileEdit] = useState(false);
   const [openPswEdit, setOpenPswEdit] = useState(false);
+  const [openSettings, setOpenSettings] = useState(false);
+  const [tmpStyle, setTmpStyle] = useState(
+    allStyles.find((item) => style.title === item.title)
+  );
   const { handleSubmit, register, errors } = useForm();
 
   const onSubmit = (data) => {
@@ -101,6 +113,18 @@ function Profile() {
         });
     };
     reader.readAsDataURL(file);
+  };
+
+  const handleNewStyle = () => {
+    axios
+      .put(BaseUrl + `/TeUser/updateStyle/${loggedUser.username}`, tmpStyle)
+      .then((res) => {
+        setLoggedUser(res.data);
+        setOpenSettings(false);
+      })
+      .catch((error) => {
+        handleError(error, "Profile page");
+      });
   };
 
   return (
@@ -190,7 +214,7 @@ function Profile() {
                       label="password"
                       margin="normal"
                       type="password"
-                      value={loggedUser.password}
+                      value={loggedUser.username}
                     />
                     <Button
                       onClick={() => setOpenPswEdit(true)}
@@ -199,6 +223,29 @@ function Profile() {
                       style={{ marginTop: "10px" }}
                     >
                       Change password
+                    </Button>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="h6">My Settings</Typography>
+                    <TextField
+                      variant="outlined"
+                      disabled
+                      fullWidth
+                      label="style"
+                      margin="normal"
+                      value={style.title}
+                    />
+                    <Button
+                      onClick={() => setOpenSettings(true)}
+                      variant="contained"
+                      color="primary"
+                      style={{ marginTop: "10px" }}
+                    >
+                      Edit
                     </Button>
                   </CardContent>
                 </Card>
@@ -348,6 +395,66 @@ function Profile() {
               Change
             </Button>
           </form>
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        open={openSettings}
+        onClose={() => setOpenSettings(false)}
+        fullWidth
+      >
+        <DialogContent>
+          <Grid container justify="space-between">
+            <Grid item>
+              <Typography variant="h6">Settings</Typography>
+            </Grid>
+            <Grid item>
+              <Tooltip title="Close">
+                <IconButton
+                  onClick={() => setOpenSettings(false)}
+                  style={{ padding: "5px" }}
+                >
+                  <CloseIcon />
+                </IconButton>
+              </Tooltip>
+            </Grid>
+          </Grid>
+          <Autocomplete
+            style={{ marginTop: "20px", marginBottom: "20px" }}
+            value={tmpStyle}
+            options={allStyles}
+            filterSelectedOptions
+            getOptionLabel={(option) => option.title}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                variant="outlined"
+                placeholder=""
+                label="users"
+              />
+            )}
+            renderOption={(option) => (
+              <Fragment>
+                <Avatar
+                  style={{
+                    backgroundColor: option.primaryM,
+                    color: option.primaryM,
+                    marginLeft: "-8px",
+                    marginRight: "16px",
+                  }}
+                />
+                <Typography>{option.title}</Typography>
+              </Fragment>
+            )}
+            onChange={(event, value) => setTmpStyle(value)}
+          />
+          <Button
+            onClick={() => handleNewStyle()}
+            variant="contained"
+            color="primary"
+            style={{ margin: "10px" }}
+          >
+            Save
+          </Button>
         </DialogContent>
       </Dialog>
     </Fragment>
