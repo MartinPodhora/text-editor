@@ -49,7 +49,6 @@ function Editor({ data }) {
       const newDoc = {
         name: docName,
         dateCreated: moment().toISOString(),
-        id: 0,
         content: text,
         user: loggedUser,
       };
@@ -57,7 +56,7 @@ function Editor({ data }) {
       axios
         .post(BaseUrl + "/TeDocument/create", newDoc)
         .then((res) => {
-          setDocs([...docs, newDoc]);
+          setDocs([...docs, res.data]);
           setDocName("");
           setText("");
           handleCloseNameDialog();

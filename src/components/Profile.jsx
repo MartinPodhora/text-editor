@@ -47,9 +47,11 @@ function Profile() {
       }
     }
 
-    let updatedUser = { ...loggedUser, ...data };
     axios
-      .put(BaseUrl + "/TeUser/update", updatedUser)
+      .put(BaseUrl + "/TeUser/update", {
+        ...data,
+        username: loggedUser.username,
+      })
       .then((res) => {
         setLoggedUser(res.data);
         handleCloseEdit();
